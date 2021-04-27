@@ -14,26 +14,23 @@ class Author(models.Model):
 class Category(models.Model):
     name = models.CharField(max_length=64, unique=True)
 
+    def __str__(self):
+        return self.name
+
 
 class Post(models.Model):
-    article = 'at'
-    news = 'nw'
-    education = 'ed'
-    science = 'sc'
-
-    POST_TYPE = [
-        (article, "Статья"),
-        (news, "Новость"),
-        (education, 'Образование'),
-        (science, 'Наука'),
-    ]
-
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
     post_type = models.CharField(
-        max_length=2, choices=POST_TYPE, default=article)
+        max_length=2,
+        choices=[
+            ('Ar', 'Article'),
+            ('Nw', 'News')
+        ],
+        default='News'
+    )
     created = models.DateTimeField(auto_now_add=True)
     cats = models.ManyToManyField(Category, through='PostCategory')
-    title = models.CharField(max_length=256)
+    title = models.CharField(max_length=255)
     text = models.TextField()
     rating = models.IntegerField(default=0)
 
@@ -48,6 +45,9 @@ class Post(models.Model):
     def preview(self):
         size = 124 if len(self.text) > 124 else len(self.text)
         return self.text[:size]+'...'
+
+    def __str__(self):
+        return f'({self.title},{self.created.ctime()})'
 
 
 class PostCategory(models.Model):
